@@ -1,6 +1,7 @@
 import 'package:InvestAportes/infra/aporte.service.dart';
 import 'package:InvestAportes/model/aporte.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ListaAportes extends StatefulWidget {
 
@@ -25,17 +26,18 @@ class _ListaAportesState extends State<ListaAportes> {
 
   @override
   Widget build(BuildContext context) {
+    var textStyle = GoogleFonts.quicksand(
+      textStyle: TextStyle(color: Colors.white)
+    );
     return Scaffold(
         appBar: AppBar(
           title: Text('Meus Aportes', 
-            style: TextStyle(
-              color: Colors.white
-            ),
+            style: textStyle,
           ),
           actions: [
             FlatButton(
               onPressed: (){},
-              child: Text('$_ano'),
+              child: Text('$_ano', style:textStyle,),
             )
           ],
         ),
@@ -56,12 +58,25 @@ class _ListaAportesState extends State<ListaAportes> {
                   itemCount: aportes.length,
                   itemBuilder: (ctx, index){
                     Aporte a = aportes[index];
-                    return ListTile(
+                    final tile = ListTile(
+                      key: Key('${a.id}'),
                       leading: Icon(Icons.calendar_today),
                       title: Text(a.getMesString()),
                       subtitle: Text('Anterior: ${a.saldoAnterior}'),
                       trailing: Text(a.valor.toString()),
                     );
+                    if(0 == index ){
+                      return Dismissible(
+                        key: Key('${a.id}'),
+                        child: tile,
+                        onDismissed: (direction) async {
+                          await service.delete(a.id);
+                          aportes.removeAt(index);
+                          Scaffold.of(context).showSnackBar(SnackBar(content: Text('Deletado com sucesso!'),));
+                        },
+                      );
+                    }
+                    return tile;
                   },
                 );
               }else if(lista.hasError){

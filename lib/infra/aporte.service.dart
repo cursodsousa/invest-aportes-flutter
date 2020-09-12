@@ -14,4 +14,20 @@ class AporteService {
       throw Exception('Erro ao obter aportes');
     }
   }
+
+  Future<void> saveAporte(Aporte aporte) async {
+    aporte.usuarioid = 1;
+    var body = jsonEncode(aporte);
+    final response = await http.post('$apiUrl', headers: {'Content-Type': 'application/json; charset=UTF-8',}, body: body);
+    if(response.statusCode != 201 ){
+      throw Exception('Erro ao salvar aporte');
+    }
+  }
+
+  Future<void> delete(int id) async {
+    final response = await http.delete('$apiUrl/$id');
+    if(response.statusCode != 204 ){
+      throw Exception('Erro ao deletar aporte');
+    }
+  }
 }

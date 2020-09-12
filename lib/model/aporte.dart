@@ -4,8 +4,9 @@ class Aporte {
   double valor;
   int mes;
   int ano;
+  int usuarioid;
 
-  Aporte({this.id, this.saldoAnterior, this.valor, this.mes, this.ano});
+  Aporte({this.id, this.saldoAnterior, this.valor, this.mes, this.ano, this.usuarioid});
 
   getMesString(){
     switch (mes){
@@ -25,8 +26,8 @@ class Aporte {
     return 'null';
   }
 
-  List<Aporte> fromListJson(){
-    
+  String toString(){
+    return 'id: $id, ano: $ano, mes: $mes, saldoAnterior: $saldoAnterior, valor: $valor, usuarioId: $usuarioid';
   }
 
   Aporte.fromJson(Map<String, dynamic> json) {
@@ -35,6 +36,7 @@ class Aporte {
     valor = json['valor'];
     mes = json['mes'];
     ano = json['ano'];
+    usuarioid = json['usuarioid'];
   }
 
   Map<String, dynamic> toJson() {
@@ -44,6 +46,7 @@ class Aporte {
     data['valor'] = this.valor;
     data['mes'] = this.mes;
     data['ano'] = this.ano;
+    data['usuarioid'] = this.usuarioid;
     return data;
   }
 }

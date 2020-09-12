@@ -1,5 +1,8 @@
+import 'package:InvestAportes/infra/aporte.service.dart';
+import 'package:InvestAportes/model/aporte.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AporteForm extends StatefulWidget {
   @override
@@ -9,36 +12,45 @@ class AporteForm extends StatefulWidget {
 class _AporteFormState extends State<AporteForm> {
 
   var _myFormKey = GlobalKey<FormState>();
+  var model = Aporte();
   var inputValor = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.');
   var inputSaldoAnterior = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.');
+  var service = AporteService();
+  var isLoading = false;
 
-  _submit(){
+  Future<void> _submit() async {
+    setState(() {
+      isLoading = true;
+    });
     if(_myFormKey.currentState.validate()){
-      Scaffold
-        .of(context)
-        .showSnackBar(
-          SnackBar(
-            content: Text('Ok!'),
-            )
-          );
+      _myFormKey.currentState.save();
+      await service.saveAporte(model);
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    var textStyle = GoogleFonts.quicksand(
+      textStyle: TextStyle(color: Colors.white)
+    );
     return Scaffold(
         backgroundColor: Colors.white ,
         appBar: AppBar(
-          title: Text('Novo Aporte'),
+          title: Text('Novo Aporte', style: textStyle,),
         ),
-        body: Form(
+        body: isLoading ? 
+        Center(child: CircularProgressIndicator(),)
+          :
+        Form(
           key: _myFormKey,
           child: Padding(
             padding: EdgeInsets.all(10.0),
             child:
               Column(
                 children: [
-
                   TextFormField(
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
@@ -54,6 +66,7 @@ class _AporteFormState extends State<AporteForm> {
                       }
                       return null;
                     },
+                    onSaved: (value) => model.ano = int.parse(value),
                   ),
                   TextFormField(
                     keyboardType: TextInputType.number,
@@ -70,6 +83,7 @@ class _AporteFormState extends State<AporteForm> {
                       }
                       return null;
                     },
+                    onSaved: (value) => model.mes = int.parse(value),
                   ),
                   TextFormField(
                     keyboardType: TextInputType.number,
@@ -83,6 +97,11 @@ class _AporteFormState extends State<AporteForm> {
                       }
                       return null;
                     },
+                    onSaved: (value) {
+                      var formatted = value.replaceAll('.', '').replaceAll(',', '.');
+                      var doubleValue = double.parse(formatted);
+                      model.saldoAnterior = doubleValue;
+                    },
                   ),
                   TextFormField(
                     controller: inputValor,
@@ -95,14 +114,21 @@ class _AporteFormState extends State<AporteForm> {
                       }
                       return null;
                     },
+                    onSaved: (value) {
+                      var formatted = value.replaceAll('.', '').replaceAll(',', '.');
+                      var doubleValue = double.parse(formatted);
+                      model.valor = doubleValue;
+                    },
                   ),
                   SizedBox(
                     width: double.infinity,
                     child: RaisedButton.icon(
-                      
-                      label: Text('Salvar'),
+                      label: Text('Salvar', style: textStyle,),
                       icon: Icon(Icons.save),
-                      onPressed: _submit,
+                      onPressed: () async {
+                         await _submit();
+                         Scaffold.of(context).showSnackBar(SnackBar(content: Text('Salvo com sucesso!'),));
+                      },
                       color: Colors.lightBlue,
                       textColor: Colors.white,
                       shape: RoundedRectangleBorder(

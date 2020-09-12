@@ -1,6 +1,8 @@
 import 'package:InvestAportes/views/aporte.form.dart';
 import 'package:InvestAportes/views/aporte.list.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 void main() {
   runApp(Home());
@@ -12,8 +14,11 @@ class Home extends StatelessWidget {
     return MaterialApp(
       title: 'Meus Aportes',
       theme: ThemeData(
-        primaryColor: Colors.lightBlue,
-        brightness: Brightness.light
+        primaryColor: Colors.indigo[900],
+        brightness: Brightness.light,
+        textTheme: GoogleFonts.quicksandTextTheme(
+          Theme.of(context).textTheme
+        ),
       ) ,
       routes: {
         '/' : (context) => ListaAportes(),
